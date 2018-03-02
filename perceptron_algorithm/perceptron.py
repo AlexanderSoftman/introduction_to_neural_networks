@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 
 # Setting the random seed, feel free to change it and see different solutions.
 np.random.seed(42)
+iteration_count = 201
+show_plot_period = 20
 
 
-def make_iteration(W_line, b_line):
+def make_iteration(W_line, b_line, show_flag=False):
     with open('data.csv', newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         dot_list = []
         for dot_pars in spamreader:
             new_W_line, new_b_line = perceptronStep(dot_pars, W_line, b_line)
-            print(dot_pars)
+            # print("process dot pars: %s" % (dot_pars,))
             dot_list.append(dot_pars)
             W_line = new_W_line
             b_line = new_b_line
@@ -23,16 +25,16 @@ def make_iteration(W_line, b_line):
         dot_list = sorted(
             dot_list,
             key=lambda value: float(value[0]))
-        print("dot_list: %s" % (dot_list,))
-        print("min x: %s, max_x: %s" % (float(dot_list[0][0]), float(dot_list[-1][0])))
         # create plot
-        x1 = [float(dot_list[0][0]), float(dot_list[-1][0])]
-        y1 = [
-            (W_line[0] * x1[0] + b_line) / (-W_line[1]),
-            (W_line[0] * x1[1] + b_line) / (-W_line[1])]
-        plt.plot(x1, y1, marker='o')
-        plt.axis('auto')
-        plt.show()
+        if show_flag is True:
+            x1 = [float(dot_list[0][0]), float(dot_list[-1][0])]
+            y1 = [
+                (W_line[0] * x1[0] + b_line) / (-W_line[1]),
+                (W_line[0] * x1[1] + b_line) / (-W_line[1])]
+            plt.plot(x1, y1, marker='o')
+            plt.axis('auto')
+            plt.show()
+        # print("new line parameters: %s, %s" % (W_line, b_line))
         return (W_line, b_line)
 
 
@@ -74,12 +76,15 @@ def perceptronStep(dot_pars, W_line, b_line, learn_rate=0.01):
 
 
 def main():
-    iteration_count = 50
     # initial perceptron parameters
     W_line = [1, -1]
     b_line = 0
     for i in range(iteration_count):
-        W_line, b_line = make_iteration(W_line, b_line)
+        show_flag = False
+        if i % show_plot_period == 0:
+            print("i: %s" % (i,))
+            show_flag = True
+        W_line, b_line = make_iteration(W_line, b_line, show_flag)
 
 
 if __name__ == '__main__':
